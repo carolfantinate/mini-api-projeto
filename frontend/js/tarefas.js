@@ -9,11 +9,35 @@ export function carregarTarefas() {
             lista.innerHTML = ''
             tarefas.forEach(tarefa => {
                 const item = document.createElement('li')
-                item.textContent = tarefa.titulo + ' '
+
+                const checkbox = document.createElement('input')
+                checkbox.type = 'checkbox'
+                checkbox.checked = tarefa.concluida
+
+                const titulo = document.createElement('span')
+                titulo.textContent = tarefa.titulo
+
+                if (tarefa.concluida) {
+                    titulo.classList.add('concluida')
+                }
+
+                const acoes = document.createElement('div')
+                acoes.classList.add('acoes')
+
+                checkbox.addEventListener('change', () => {
+
+                    editarTarefa(tarefa.id, {
+                        titulo: tarefa.titulo,
+                        concluida: checkbox.checked
+                    })
+                        .then(() => carregarTarefas())
+
+                })
 
                 //botao excluir
                 const btnExcluir = document.createElement('button')
-                btnExcluir.textContent = 'Excluir'
+                btnExcluir.innerHTML = '<i class="fa-solid fa-trash"></i>'
+                btnExcluir.classList.add('btn-excluir')
 
                 btnExcluir.addEventListener('click', () => {
                     deletarTarefa(tarefa.id)
@@ -22,19 +46,29 @@ export function carregarTarefas() {
 
                 //botao editar
                 const btnEditar = document.createElement('button')
-                btnEditar.textContent = 'Editar'
+                btnEditar.innerHTML = '<i class="fa-solid fa-pen"></i>'
+                btnEditar.classList.add('btn-editar')
+
 
                 btnEditar.addEventListener('click', () => {
                     const novoTitulo = prompt('Digite o novo título da tarefa:')
 
                     if (!novoTitulo) return
 
-                    editarTarefa(tarefa.id, { titulo: novoTitulo })
+                    editarTarefa(tarefa.id, {
+                        titulo: novoTitulo,
+                        concluida: tarefa.concluida
+                    })
                         .then(() => carregarTarefas())
                 })
 
-                item.appendChild(btnExcluir)
-                item.appendChild(btnEditar)
+                acoes.appendChild(btnEditar)
+                acoes.appendChild(btnExcluir)
+
+                item.appendChild(checkbox)
+                item.appendChild(titulo)
+                item.appendChild(acoes)
+
                 lista.appendChild(item)
             })
         })

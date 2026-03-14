@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Tarefas</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
-    <h1>Adicionar Tarefa</h1>
+    <main>
+        <h1>Adicionar Tarefa</h1>
+        <form id="formTarefa">
+            <input type="text" id="titulo" placeholder="Digite uma tarefa">
+            <button type="submit">Adicionar</button>
+        </form>
+        <h2>Minhas Tarefas</h2>
+        <ul id="listaTarefas"></ul>
+    </main>
 
-    <form id="formTarefa">
-        <input type="text" id="titulo" placeholder="Digite uma tarefa">
-        <button type="submit">Adicionar</button>
-    </form>
-
-    <h2>Minhas Tarefas</h2>
-    <ul id="listaTarefas"></ul>
-
+    <script src="https://kit.fontawesome.com/f9c90ebe75.js" crossorigin="anonymous"></script>
     <script type="module" src="./js/main.js"></script>
 </body>
+
 </html>

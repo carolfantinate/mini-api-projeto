@@ -1,5 +1,6 @@
 const http = require('http')
 const tarefasRoute = require('./routes/tarefasRoutes')
+
 const server = http.createServer((req, res) => {
     // CORS
     res.setHeader('Access-Control-Allow-Origin', '*')

@@ -1,9 +1,19 @@
-const tarefas = require('../data/tarefas')
+const tarefasModel = require('../models/tarefasModel')
 
 //listar tarefas
 function listarTarefas(req, res) {
-    res.writeHead(200, { 'Content-Type': "application/json" })
-    res.end(JSON.stringify(tarefas))
+    const sql = 'SELECT * FROM tarefas'
+
+    tarefasModel.listarTarefas((erro, resultados) => {
+        if (erro) {
+            res.writeHead(500, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify({ erro: 'Erro no servidor' }))
+            return
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify(resultados))
+    })
 }
 
 //criar tarefa
@@ -17,16 +27,21 @@ function criarTarefa(req, res) {
 
     req.on('end', () => {
 
-        const novaTarefa = JSON.parse(body)
+        const { titulo } = JSON.parse(body)
 
-        novaTarefa.id = tarefas.length + 1
-
-        tarefas.push(novaTarefa)
-
-        res.writeHead(201, { 'Content-Type': 'application/json' })
-
-        res.end(JSON.stringify(novaTarefa))
-
+        tarefasModel.criarTarefa(titulo, (erro, resultado) => {
+            if (erro) {
+                res.writeHead(500, { 'Content-Type': 'application/json' })
+                res.end(JSON.stringify({ erro: 'Erro ao criar' }))
+                return
+            }
+            res.writeHead(201, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify({
+                id: resultado.insertId,
+                titulo,
+                concluida: false
+            }))
+        })
     })
 
 }
@@ -34,27 +49,16 @@ function criarTarefa(req, res) {
 //deletar tarefa
 function deletarTarefa(req, res, id) {
 
-    const index = tarefas.findIndex(t => t.id === id)
-
-    if (index !== -1) {
-
-        tarefas.splice(index, 1)
+    tarefasModel.deletarTarefa(id, (erro) => {
+        if (erro) {
+            res.writeHead(500, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify({ erro: 'Erro ao deletar' }))
+            return
+        }
 
         res.writeHead(200, { 'Content-Type': 'application/json' })
-
-        res.end(JSON.stringify({
-            mensagem: 'Tarefa removida'
-        }))
-
-    } else {
-
-        res.writeHead(404, { 'Content-Type': 'application/json' })
-
-        res.end(JSON.stringify({
-            mensagem: 'Tarefa não encontrada'
-        }))
-
-    }
+        res.end(JSON.stringify({ mensagem: 'Tarefa removida' }))
+    })
 
 }
 
@@ -69,27 +73,20 @@ function editarTarefa(req, res, id) {
 
     req.on('end', () => {
 
-        const dados = JSON.parse(body)
+        const { titulo, concluida } = JSON.parse(body)
 
-        const tarefa = tarefas.find(t => t.id === id)
+        tarefasModel.editarTarefa(id, titulo, concluida, (erro) => {
 
-        if (tarefa) {
-
-            tarefa.titulo = dados.titulo
+            if (erro) {
+                res.writeHead(500, { 'Content-Type': 'application/json' })
+                res.end(JSON.stringify({ erro: 'Erro ao atualizar' }))
+                return
+            }
 
             res.writeHead(200, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify({ mensagem: 'Tarefa atualizada' }))
 
-            res.end(JSON.stringify(tarefa))
-
-        } else {
-
-            res.writeHead(404, { 'Content-Type': 'application/json' })
-
-            res.end(JSON.stringify({
-                mensagem: 'Tarefa não encontrada'
-            }))
-
-        }
+        })
 
     })
 
